@@ -1,0 +1,572 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Switch Checkpoint 5</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f5f7fa;
+            --surface: #ffffff;
+            --border: #e1e8f0;
+            --border-hi: #d0dae8;
+            --accent: #0066cc;
+            --text: #2c3e50;
+            --text-dim: #7a8fa6;
+            --text-hi: #1a2332;
+            --danger: #e63946;
+            --success: #06a77d;
+            --mono: 'IBM Plex Mono', monospace;
+            --sans: 'IBM Plex Sans', sans-serif;
+            --radius: 4px;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: .35;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+
+        .top-nav {
+            position: relative;
+            z-index: 2;
+            background-color: #123c61;
+            padding: 6px 16px;
+        }
+
+        .top-nav-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #ffffff;
+            gap: 16px;
+        }
+
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .top-nav-brand {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .top-nav-links {
+            display: flex;
+            gap: 16px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .top-nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .top-nav-logo img {
+            height: 28px;
+            width: auto;
+            display: block;
+        }
+
+
+        .page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 24px 0;
+        }
+
+        /*  Header  */
+        header { text-align: center; margin-bottom: 56px; }
+
+        .logo-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo-mark svg { width: 28px; height: 28px; }
+
+        .logo-mark span {
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        h1 {
+            font-family: var(--mono);
+            font-size: clamp(22px, 4vw, 36px);
+            font-weight: 600;
+            color: var(--text-hi);
+            letter-spacing: -.02em;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        h1 em { font-style: normal; color: var(--accent); }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-family: var(--mono);
+            letter-spacing: .05em;
+        }
+
+        /*  Card  */
+        .card {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: .6;
+        }
+
+        /*  Step header  */
+        .step-divider {
+            border-top: 1px solid var(--border);
+            margin: 28px 0;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .step-badge {
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 2px;
+            padding: 2px 7px;
+            opacity: .7;
+            white-space: nowrap;
+        }
+
+        .step-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        /*  Table  */
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 28px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--mono);
+            font-size: 12px;
+        }
+
+        thead tr {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        thead th {
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: rgba(0,102,204,.03); }
+
+        tbody td {
+            padding: 10px 14px;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        /* Column-specific styling */
+        td.serial    { color: var(--text-hi); font-weight: 500; }
+        td.date      { color: var(--text-dim); font-size: 11px; }
+        td.tier      {
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: .06em;
+        }
+        td.key       { color: var(--text-dim); font-size: 11px; letter-spacing: .04em; }
+        td.unique-key {
+            font-size: 11px;
+            letter-spacing: .04em;
+        }
+
+        .row-num {
+            display: inline-block;
+            font-size: 9px;
+            color: var(--text-dim);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 1px 5px;
+            margin-right: 6px;
+            letter-spacing: .06em;
+            vertical-align: middle;
+        }
+
+        /* Tier pill */
+        .tier-pill {
+            display: inline-block;
+            background: rgba(0,102,204,.08);
+            border: 1px solid rgba(0,102,204,.2);
+            border-radius: 2px;
+            padding: 1px 7px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        /* Contract term badge */
+        .term-badge {
+            display: inline-block;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 1px 7px;
+            font-size: 10px;
+            letter-spacing: .06em;
+            color: var(--text-dim);
+        }
+
+        /*  Confirm cards  */
+        .confirm-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .confirm-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            background: var(--bg);
+            transition: border-color .2s, background .2s, box-shadow .2s;
+            user-select: none;
+        }
+
+        .confirm-option:hover {
+            border-color: var(--accent);
+            background: rgba(0,102,204,.03);
+        }
+
+        .confirm-option input[type="radio"] {
+            width: 14px;
+            height: 14px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .confirm-option.correct:has(input:checked) {
+            border-color: var(--success);
+            background: rgba(6,167,125,.06);
+            box-shadow: 0 0 0 2px rgba(6,167,125,.12);
+        }
+
+        .confirm-option.incorrect:has(input:checked) {
+            border-color: var(--danger);
+            background: rgba(230,57,70,.06);
+            box-shadow: 0 0 0 2px rgba(230,57,70,.12);
+        }
+
+        .confirm-option .opt-label {
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .confirm-option.correct  .opt-label { color: var(--success); }
+        .confirm-option.incorrect .opt-label { color: var(--danger); }
+
+        .confirm-option .opt-desc {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 1px;
+        }
+
+        /*  Submit button  */
+        #confirm-btn {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 13px;
+            font-family: var(--mono);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: .08em;
+            cursor: pointer;
+            transition: opacity .2s, transform .1s;
+        }
+
+        #confirm-btn:hover  { opacity: .9; }
+        #confirm-btn:active { transform: scale(.99); }
+
+        /*  Footer  */
+        footer {
+            width: calc(100% + 48px);
+            margin: auto -24px 0;
+            padding: 16px 0;
+            background: #02101E;
+            color: #ffffff;
+            align-self: stretch;
+        }
+
+        .footer-inner {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            line-height: 0;
+            flex: 0 0 auto;
+        }
+
+        .footer-logo img {
+            border: none;
+            padding: 0;
+            margin: 0;
+            height: 12px;
+            width: auto;
+            opacity: 1;
+            display: block;
+        }
+
+        .footer-copy {
+            font-size: 13px;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+        /*  Animation  */
+
+        .fade-in { animation: fadeIn .4s ease both; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <div class="top-nav-left">
+            <div class="top-nav-brand">SD Automation</div>
+            <ul class="top-nav-links">
+                <li><a href="{{ public_path('/') }}">Home</a></li>
+            </ul>
+        </div>
+        <div class="top-nav-logo">
+            <img src="{{ public_path('/logos/images/T-logo.png') }}" alt="Logo" />
+        </div>
+    </div>
+</nav>    
+<div class="page">
+
+    <header class="fade-in">
+        <div class="logo-mark">
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="8" height="8" rx="1" fill="#0066cc"/>
+                <rect x="2"  y="2"  width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                <rect x="21" y="2"  width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                <rect x="2"  y="21" width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                <rect x="21" y="21" width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+            </svg>
+            <span>HPE Aruba SATSOC</span>
+        </div>
+        <h1>Switch <em>Checkpoint</em></h1>
+        <p class="subtitle">License subscription tier & Contract details</p>
+    </header>
+
+    <div class="card fade-in" style="animation-delay:.1s">
+
+        <!-- Table -->
+        <div class="step-header">
+            <span class="step-badge">CP 5</span>
+            <span class="step-label">License Subscription Tier Contract Details</span>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Serial Number</th>
+                        <th>Subscription Start</th>
+                        <th>Subscription End</th>
+                        <th>Contract Term</th>
+                        <th>Tier</th>
+                        <th>Subscription Key</th>
+                        <th>Unique Sub. Key</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in subscription_rows %}
+                    <tr>
+                        <td><span class="row-num">{{ loop.index }}</span></td>
+                        <td class="serial">{{ row.serial_number }}</td>
+                        <td class="date">{{ row.subscription_start_time }}</td>
+                        <td class="date">{{ row.subscription_end_time }}</td>
+                        <td><span class="term-badge">{{ row.contract_term }}</span></td>
+                        <td><span class="tier-pill">{{ row.subscription_tier }}</span></td>
+                        <td class="key">{{ row.subscription_key }}</td>
+                        <td class="key">{{ row.unique_subscription_key }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Confirm -->
+        <div class="step-divider"></div>
+
+        <div class="confirm-wrap">
+            <div class="step-header">
+                <span class="step-badge">VERIFY</span>
+                <span class="step-label">Confirm Subscription Details</span>
+            </div>
+
+            <form action="{{ public_path('/switch/checkpoint5/submit') }}" method="post">
+                <div class="confirm-group">
+                    <label class="confirm-option correct">
+                        <input type="radio" name="result" value="true" required />
+                        <div>
+                            <div class="opt-label">Correct</div>
+                            <div class="opt-desc">Details are accurate</div>
+                        </div>
+                    </label>
+                    <label class="confirm-option incorrect">
+                        <input type="radio" name="result" value="false" />
+                        <div>
+                            <div class="opt-label">Incorrect</div>
+                            <div class="opt-desc">Details have errors</div>
+                        </div>
+                    </label>
+                </div>
+
+                <button type="submit" id="confirm-btn">Confirm</button>
+            </form>
+        </div>
+
+    </div>
+
+    <footer class="fade-in" style="animation-delay:.2s">
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <img src="{{ public_path('/logos/images/tata-comm-footer.png') }}" alt="Footer Logo" />
+            </div>
+            <div class="footer-copy">
+                &copy; 2026 Tata Communications Ltd. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+{% include "_back_button_guard.html" %}
+{% include "_loading_overlay.html" %}
+
+</body>
+</html>

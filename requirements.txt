@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+jinja2
+python-multipart
+xlsxwriter
+openpyxl
+python-dotenv
+requests
+mysql-connector-python

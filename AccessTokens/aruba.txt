@@ -1,0 +1,11 @@
+{
+  "provider": "aruba",
+  "token_url": "https://api-ap.central.arubanetworks.com/oauth2/token",
+  "client_id": "",
+  "client_secret": "",
+  "access_token": "",
+  "refresh_token": "",
+  "generated_at_utc": "2026-06-16T01:05:10.247610Z",
+  "expires_at_epoch": 1781579110,
+  "refresh_before_epoch": 1781578870
+}

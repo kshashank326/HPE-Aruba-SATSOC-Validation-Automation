@@ -1,0 +1,10 @@
+{
+  "provider": "greenlake",
+  "token_url": "https://global.api.greenlake.hpe.com/authorization/v2/oauth2/d009edda8a9c11eeb4026e9efddcfb10/token",
+  "client_id": "",
+  "client_secret": "",
+  "access_token": "",
+  "generated_at_utc": "2026-06-16T01:17:30Z",
+  "expires_at_epoch": 1781573550,
+  "refresh_before_epoch": 1781573310
+}

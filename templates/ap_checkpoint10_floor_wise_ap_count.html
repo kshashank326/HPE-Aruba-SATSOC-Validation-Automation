@@ -1,0 +1,632 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AP Checkpoint 10 SATSOC</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet"
+    />
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg:        #f5f7fa;
+            --surface:   #ffffff;
+            --border:    #e1e8f0;
+            --border-hi: #d0dae8;
+
+            --accent:    #0066cc;
+            --success:   #06a77d;
+            --danger:    #e63946;
+
+            --text:      #2c3e50;
+            --text-hi:   #1a2332;
+            --text-dim:  #7a8fa6;
+
+            --mono: 'IBM Plex Mono', monospace;
+            --sans: 'IBM Plex Sans', sans-serif;
+
+            --radius: 4px;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: .35;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .top-nav {
+            position: relative;
+            z-index: 2;
+            background-color: #123c61;
+            padding: 6px 16px;
+        }
+
+        .top-nav-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #ffffff;
+            gap: 16px;
+        }
+
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .top-nav-brand {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .top-nav-links {
+            display: flex;
+            gap: 16px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .top-nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .top-nav-logo img {
+            height: 28px;
+            width: auto;
+            display: block;
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 24px 0;
+        }
+
+        /*  Header  */
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .logo-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .logo-mark svg { width: 28px; height: 28px; }
+
+        .logo-mark span {
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        h1 {
+            font-family: var(--mono);
+            font-size: clamp(20px, 3vw, 30px);
+            font-weight: 600;
+            color: var(--text-hi);
+            margin-bottom: 8px;
+        }
+
+        h1 em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .subtitle {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--text-dim);
+            letter-spacing: .08em;
+        }
+
+        /*  Card  */
+
+        .card {
+            width: 100%;
+            max-width: 620px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: .6;
+        }
+
+        /*  Section label  */
+
+        .section-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+        }
+
+        /*  Error list  */
+
+        .error-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+
+        .error-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #fff5f5;
+            border: 1px solid #fac5c9;
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--danger);
+            line-height: 1.6;
+        }
+
+        .error-item::before {
+            content: '';
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /*  Table  */
+
+        .ap-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 32px;
+            font-family: var(--mono);
+            font-size: 12px;
+        }
+
+        .ap-table thead tr {
+            background: var(--bg);
+            border-bottom: 2px solid var(--border-hi);
+        }
+
+        .ap-table th {
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        .ap-table th:last-child,
+        .ap-table td:last-child {
+            text-align: right;
+        }
+
+        .ap-table td {
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .ap-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ap-table tbody tr:not(.total-row):hover td {
+            background: #f0f6ff;
+        }
+
+        /* floor name */
+        .ap-table td.col-floor {
+            color: var(--text-hi);
+            font-weight: 500;
+        }
+
+        /* ap count */
+        .ap-table td.col-count {
+            color: var(--accent);
+        }
+
+        /* total row */
+        .ap-table tr.total-row {
+            background: var(--bg);
+            border-top: 2px solid var(--border-hi);
+        }
+
+        .ap-table tr.total-row td {
+            font-weight: 600;
+            color: var(--text-hi);
+            border-bottom: none;
+            padding-top: 13px;
+            padding-bottom: 13px;
+        }
+
+        .ap-table tr.total-row td.col-total-count {
+            color: var(--success);
+            font-size: 13px;
+        }
+
+        /*  Divider  */
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin-bottom: 28px;
+        }
+
+        /*  Radio group  */
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+        }
+
+        .radio-option:hover {
+            border-color: var(--border-hi);
+            background: #eef3fa;
+        }
+
+        .radio-option.selected-correct {
+            border-color: var(--success);
+            background: #f0fdf9;
+        }
+
+        .radio-option.selected-incorrect {
+            border-color: var(--danger);
+            background: #fff5f5;
+        }
+
+        .radio-option input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-hi);
+            border-radius: 50%;
+            flex-shrink: 0;
+            cursor: pointer;
+            position: relative;
+            transition: border-color .2s;
+        }
+
+        .radio-option input[type="radio"]:checked {
+            border-color: var(--accent);
+        }
+
+        .radio-option input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .radio-label {
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            letter-spacing: .04em;
+        }
+
+        .badge {
+            display: inline-block;
+            margin-left: 8px;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 2px;
+            font-weight: 600;
+            letter-spacing: .1em;
+        }
+
+        .badge-correct   { background: #d4f5eb; color: var(--success); }
+        .badge-incorrect { background: #fde8ea; color: var(--danger); }
+
+        /*  Submit button  */
+
+        .btn-confirm {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 24px;
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity .2s;
+        }
+
+        .btn-confirm:hover { opacity: .87; }
+
+        
+
+
+        /*  Footer  */
+
+        footer {
+            width: calc(100% + 48px);
+            margin: auto -24px 0;
+            padding: 16px 0;
+            background: #02101E;
+            color: #ffffff;
+            align-self: stretch;
+        }
+
+        .footer-inner {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            line-height: 0;
+            flex: 0 0 auto;
+        }
+
+        .footer-logo img {
+            border: none;
+            padding: 0;
+            margin: 0;
+            height: 12px;
+            width: auto;
+            opacity: 1;
+            display: block;
+        }
+
+        .footer-copy {
+            font-size: 13px;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+
+
+        /*  Animation  */
+
+        .fade-in { animation: fadeIn .4s ease both; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="top-nav">
+        <div class="top-nav-inner">
+            <div class="top-nav-left">
+                <div class="top-nav-brand">SD Automation</div>
+                <ul class="top-nav-links">
+                    <li><a href="{{ public_path('/') }}">Home</a></li>
+                </ul>
+            </div>
+            <div class="top-nav-logo">
+                <img src="{{ public_path('/logos/images/T-logo.png') }}" alt="Logo" />
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+
+        <header class="fade-in">
+
+            <div class="logo-mark">
+                <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="10" width="8" height="8" rx="1" fill="#0066cc"/>
+                    <rect x="2"  y="2"  width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                    <rect x="21" y="2"  width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                    <rect x="2"  y="21" width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                    <rect x="21" y="21" width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                </svg>
+                <span>HPE Aruba SATSOC</span>
+            </div>
+
+            <h1>AP <em>Checkpoint</em></h1>
+
+            <p class="subtitle">Floor wise AP count</p>
+
+        </header>
+
+        <div class="card fade-in" style="animation-delay:.1s">
+
+            {% if errors %}
+
+                <div class="section-label">Errors Detected</div>
+
+                <div class="error-list">
+                    {% for error in errors %}
+                    <div class="error-item">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+
+                <div class="section-label">Floor Distribution</div>
+
+                <table class="ap-table">
+                    <thead>
+                        <tr>
+                            <th>Floor Name</th>
+                            <th>AP Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in floor_rows %}
+                        <tr>
+                            <td class="col-floor">{{ row.floor_name }}</td>
+                            <td class="col-count">{{ row.ap_count }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="total-row">
+                            <td class="col-floor">Total Count of APs</td>
+                            <td class="col-total-count">{{ total_ap_count }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            {% endif %}
+
+            <hr class="divider" />
+
+            <div class="section-label">Submit Result</div>
+
+            <form action="{{ public_path('/ap/checkpoint10/submit') }}" method="post">
+
+                <div class="radio-group">
+
+                    <label class="radio-option" id="opt-correct">
+                        <input
+                            type="radio"
+                            name="result"
+                            value="true"
+                            required
+                            onchange="selectOption('correct')"
+                        />
+                        <span class="radio-label">
+                            Correct
+                            <span class="badge badge-correct">OK</span>
+                        </span>
+                    </label>
+
+                    <label class="radio-option" id="opt-incorrect">
+                        <input
+                            type="radio"
+                            name="result"
+                            value="false"
+                            onchange="selectOption('incorrect')"
+                        />
+                        <span class="radio-label">
+                            Incorrect
+                            <span class="badge badge-incorrect">FAIL</span>
+                        </span>
+                    </label>
+
+                </div>
+
+                <button class="btn-confirm" type="submit">
+                    Submit Result
+                </button>
+
+            </form>
+
+        </div>
+
+        <footer class="fade-in" style="animation-delay:.2s">
+            <div class="footer-inner">
+                <div class="footer-logo">
+                    <img src="{{ public_path('/logos/images/tata-comm-footer.png') }}" alt="Footer Logo" />
+                </div>
+                <div class="footer-copy">
+                    &copy; 2026 Tata Communications Ltd. All rights reserved.
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        function selectOption(which) {
+            document.getElementById('opt-correct').classList.remove('selected-correct');
+            document.getElementById('opt-incorrect').classList.remove('selected-incorrect');
+            if (which === 'correct') {
+                document.getElementById('opt-correct').classList.add('selected-correct');
+            } else {
+                document.getElementById('opt-incorrect').classList.add('selected-incorrect');
+            }
+        }
+</script>
+
+{% include "_back_button_guard.html" %}
+{% include "_loading_overlay.html" %}
+
+</body>
+</html>

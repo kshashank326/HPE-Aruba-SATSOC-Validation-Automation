@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HPE Aruba Reports</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet"
+    />
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f5f7fa;
+            --surface: #ffffff;
+            --border: #e1e8f0;
+            --border-hi: #d0dae8;
+            --accent: #0066cc;
+            --text: #2c3e50;
+            --text-hi: #1a2332;
+            --text-dim: #7a8fa6;
+            --mono: 'IBM Plex Mono', monospace;
+            --sans: 'IBM Plex Sans', sans-serif;
+            --radius: 4px;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: .35;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .top-nav {
+            position: relative;
+            z-index: 2;
+            background-color: #123c61;
+            padding: 6px 16px;
+        }
+
+        .top-nav-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #ffffff;
+            gap: 16px;
+        }
+
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .top-nav-brand {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .top-nav-links {
+            display: flex;
+            gap: 16px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .top-nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .top-nav-links a:hover,
+        .top-nav-links a:focus-visible {
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .top-nav-logo img {
+            height: 28px;
+            width: auto;
+            display: block;
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 24px 0;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .logo-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .logo-mark svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .logo-mark span {
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        h1 {
+            font-family: var(--mono);
+            font-size: clamp(20px, 3vw, 30px);
+            font-weight: 600;
+            color: var(--text-hi);
+            margin-bottom: 8px;
+        }
+
+        h1 em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .subtitle {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--text-dim);
+            letter-spacing: .08em;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 1080px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: .6;
+        }
+
+        .reports-banner {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .reports-kicker {
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .reports-title {
+            font-family: var(--mono);
+            font-size: clamp(22px, 3vw, 32px);
+            line-height: 1.2;
+            color: var(--text-hi);
+            margin-bottom: 6px;
+        }
+
+        .reports-title em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .reports-subtitle {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: .05em;
+        }
+
+        .reports-note {
+            font-size: 13px;
+            color: var(--text-dim);
+            max-width: 520px;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr 1.2fr;
+            gap: 16px;
+        }
+
+        .reports-panel {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg);
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .reports-panel-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            background: rgba(255,255,255,.55);
+        }
+
+        .reports-panel-body {
+            padding: 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .reports-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow: auto;
+            min-height: 0;
+        }
+
+        .reports-list button,
+        .reports-list a,
+        .download-link {
+            appearance: none;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            background: #fff;
+            color: var(--text);
+            text-decoration: none;
+            padding: 11px 12px;
+            font-family: var(--mono);
+            font-size: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: border-color .2s, box-shadow .2s, transform .1s, background .2s;
+            width: 100%;
+        }
+
+        .reports-list button:hover,
+        .reports-list a:hover,
+        .download-link:hover {
+            border-color: var(--accent);
+            background: rgba(0,102,204,.04);
+        }
+
+        .reports-list button.active,
+        .reports-list a.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(0,102,204,.10);
+            background: rgba(0,102,204,.06);
+        }
+
+        .reports-meta {
+            padding-top: 8px;
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        .reports-empty {
+            display: grid;
+            place-items: center;
+            min-height: 100%;
+            padding: 22px;
+            border: 1px dashed var(--border-hi);
+            border-radius: 3px;
+            color: var(--text-dim);
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.6;
+            background: rgba(255,255,255,.65);
+        }
+
+        .reports-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: auto;
+            min-width: 180px;
+            padding-inline: 16px;
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+            text-align: center;
+        }
+
+        .download-link[aria-disabled="true"] {
+            opacity: .45;
+            pointer-events: none;
+        }
+
+        .download-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        footer {
+            width: calc(100% + 48px);
+            margin: auto -24px 0;
+            padding: 16px 0;
+            background: #02101E;
+            color: #ffffff;
+            align-self: stretch;
+        }
+
+        .footer-inner {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            line-height: 0;
+            flex: 0 0 auto;
+        }
+
+        .footer-logo img {
+            border: none;
+            padding: 0;
+            margin: 0;
+            height: 12px;
+            width: auto;
+            opacity: 1;
+            display: block;
+        }
+
+        .footer-copy {
+            font-size: 13px;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+        .fade-in {
+            animation: fadeIn .4s ease both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 1024px) {
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="top-nav-inner">
+            <div class="top-nav-left">
+                <div class="top-nav-brand">SD Automation</div>
+                <ul class="top-nav-links">
+                    <li><a href="{{ public_path('/') }}">Home</a></li>
+                    <li><a href="{{ public_path('/reports') }}" target="_blank" rel="noopener">Reports</a></li>
+                </ul>
+            </div>
+            <div class="top-nav-logo">
+                <img src="{{ public_path('/logos/images/T-logo.png') }}" alt="Logo" />
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <header class="fade-in">
+            <div class="logo-mark">
+                <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="10" width="8" height="8" rx="1" fill="#0066cc"/>
+                    <rect x="2"  y="2"  width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                    <rect x="21" y="2"  width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                    <rect x="2"  y="21" width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                    <rect x="21" y="21" width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                </svg>
+                <span>HPE Aruba SATSOC</span>
+            </div>
+            <h1>ARCHIVED <em>POST CHECK</em> REPORTS</h1>
+            <p class="subtitle">Browse month folders, date folders, and downloadable Excel files</p>
+        </header>
+
+        <div class="card fade-in" style="animation-delay:.1s">
+            <div class="reports-banner">
+                <div>
+                    <div class="reports-kicker">Archived POST CHECK Reports</div>
+                    <!-- <div class="reports-title">Archived <em>Excel</em> Reports</div> -->
+                    <div class="reports-subtitle">Month folder &gt; date folder &gt; generated report file</div>
+                </div>
+                <div class="reports-note">
+                    This section will help you access archived POST CHECK reports easily. Once the system saves the Excel files, 
+                    you will be able to browse them by month and day, and quickly download the report you need.
+                </div>
+            </div>
+
+            <div class="reports-grid">
+                <section class="reports-panel" aria-label="Month folders">
+                    <div class="reports-panel-header">Months</div>
+                    <div class="reports-panel-body">
+                        <div id="months-list" class="reports-list"></div>
+                    </div>
+                </section>
+
+                <section class="reports-panel" aria-label="Date folders">
+                    <div class="reports-panel-header">Dates</div>
+                    <div class="reports-panel-body">
+                        <div id="dates-list" class="reports-list"></div>
+                    </div>
+                </section>
+
+                <section class="reports-panel" aria-label="Reports for selected date">
+                    <div class="reports-panel-header">Reports</div>
+                    <div class="reports-panel-body">
+                        <div id="files-list" class="reports-list"></div>
+                        <div class="reports-meta" id="report-details">
+                            Select a month and date to view the generated Excel files for that day.
+                        </div>
+                        <div class="reports-actions">
+                            <a id="download-link" class="download-link" href="#" aria-disabled="true" download>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 3v12"/>
+                                    <path d="M7 10l5 5 5-5"/>
+                                    <path d="M5 21h14"/>
+                                </svg>
+                                Download
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <footer class="fade-in" style="animation-delay:.2s">
+            <div class="footer-inner">
+                <div class="footer-logo">
+                    <img src="{{ public_path('/logos/images/tata-comm-footer.png') }}" alt="Footer Logo" />
+                </div>
+                <div class="footer-copy">
+                    &copy; 2026 Tata Communications Ltd. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        window.__satsocBackupReports = {{ backup_reports_index | tojson }};
+        window.__satsocBackupReportsInitial = {% if reports_initial_selection is defined %}{{ reports_initial_selection | tojson }}{% else %}{"month":"","date":""}{% endif %};
+    </script>
+
+    <script>
+        const baseRoute = {{ base_route|tojson }};
+        const reportsInitialSelection = (function loadReportsInitialSelection() {
+            const raw = window.__satsocBackupReportsInitial;
+            if (raw && typeof raw === "object") {
+                return {
+                    month: String(raw.month || "").trim(),
+                    date: String(raw.date || "").trim(),
+                };
+            }
+            return { month: "", date: "" };
+        })();
+
+        const reportsIndex = (function loadReportsIndex() {
+            try {
+                const serverData = window.__satsocBackupReports;
+                if (serverData && typeof serverData === "object") {
+                    return normalizeReportsIndex(serverData);
+                }
+
+                const stored = window.localStorage.getItem("satsocBackupReportsIndex");
+                if (stored) {
+                    return normalizeReportsIndex(JSON.parse(stored));
+                }
+            } catch (error) {
+                console.warn("Unable to load stored reports index", error);
+            }
+
+            return { months: [] };
+        })();
+
+        function normalizeReportsIndex(raw) {
+            if (!raw || typeof raw !== "object") {
+                return { months: [] };
+            }
+
+            if (Array.isArray(raw.months)) {
+                return {
+                    months: raw.months.map(month => ({
+                        label: String(month.label || month.month || month.name || "").trim(),
+                        path: String(month.path || month.label || month.month || month.name || "").trim(),
+                        dates: Array.isArray(month.dates) ? month.dates.map(date => ({
+                            label: String(date.label || date.date || date.name || "").trim(),
+                            path: String(date.path || date.label || date.date || date.name || "").trim(),
+                            files: Array.isArray(date.files) ? date.files.map(file => ({
+                                name: String(file.name || file.file_name || file.filename || "").trim(),
+                                path: String(file.path || file.href || file.download_url || "").trim(),
+                            })) : [],
+                        })) : [],
+                    })),
+                };
+            }
+
+            return { months: [] };
+        }
+
+        function setActiveReportEntry(buttons, activeButton) {
+            buttons.forEach(button => button.classList.toggle("active", button === activeButton));
+        }
+
+        function buildReportsRoute(monthPath = "", datePath = "") {
+            let route = `${baseRoute}/reports`;
+            if (monthPath) {
+                route += `/${encodeURIComponent(monthPath)}`;
+            }
+            if (datePath) {
+                route += `/${encodeURIComponent(datePath)}`;
+            }
+            return route;
+        }
+
+        function findMonthByPath(path) {
+            return reportsIndex.months.find(month => month.path === path) || null;
+        }
+
+        function findDateByPath(month, path) {
+            if (!month || !Array.isArray(month.dates)) {
+                return null;
+            }
+            return month.dates.find(date => date.path === path) || null;
+        }
+
+        function renderReportsMode() {
+            const stepShell = document.querySelector(".card");
+            const title = document.querySelector("header h1");
+            const subtitle = document.querySelector("header .subtitle");
+            const logoMark = document.querySelector(".logo-mark span");
+            const monthsList = document.getElementById("months-list");
+            const datesList = document.getElementById("dates-list");
+            const filesList = document.getElementById("files-list");
+            const reportDetails = document.getElementById("report-details");
+            const downloadLink = document.getElementById("download-link");
+
+            let activeMonth = null;
+            let activeDate = null;
+            let activeFile = null;
+
+            function resetDownload() {
+                activeFile = null;
+                downloadLink.href = "#";
+                downloadLink.setAttribute("aria-disabled", "true");
+            }
+
+            function renderFiles(files) {
+                filesList.innerHTML = "";
+                resetDownload();
+
+                if (!files.length) {
+                    filesList.innerHTML = '<div class="reports-empty">No Excel files were found for the selected date.</div>';
+                    reportDetails.textContent = "The selected date folder does not contain any `.xlsx` files.";
+                    return;
+                }
+
+                files.forEach(file => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.textContent = file.name || "Unnamed report";
+                    button.addEventListener("click", () => {
+                        activeFile = file;
+                        filesList.querySelectorAll("button").forEach(btn => btn.classList.remove("active"));
+                        button.classList.add("active");
+                        if (file.path) {
+                            downloadLink.href = file.path;
+                            downloadLink.setAttribute("aria-disabled", "false");
+                        } else {
+                            downloadLink.href = "#";
+                            downloadLink.setAttribute("aria-disabled", "true");
+                        }
+                        downloadLink.download = file.name || "report.xlsx";
+                        reportDetails.textContent = `Selected file: ${file.name || "Unnamed report"}`;
+                    });
+                    filesList.appendChild(button);
+                });
+
+                reportDetails.textContent = "Select a file to enable the download action.";
+            }
+
+            function renderDates(dates, monthPath = "") {
+                datesList.innerHTML = "";
+                filesList.innerHTML = '<div class="reports-empty">Select a date folder to view the Excel files for that day.</div>';
+                resetDownload();
+
+                if (!dates.length) {
+                    datesList.innerHTML = '<div class="reports-empty">No date folders are available under the selected month.</div>';
+                    reportDetails.textContent = "Choose another month or load an archive that includes date folders.";
+                    return;
+                }
+
+                dates.forEach(date => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.dataset.path = date.path || "";
+                    button.textContent = date.label || "Unnamed date";
+                    button.addEventListener("click", () => {
+                        activeDate = date;
+                        setActiveReportEntry([...datesList.querySelectorAll("button")], button);
+                        window.location.assign(buildReportsRoute(monthPath || (activeMonth && activeMonth.path) || "", date.path));
+                    });
+                    datesList.appendChild(button);
+                });
+
+                reportDetails.textContent = "Select a date folder to view the generated reports for that day.";
+            }
+
+            function renderMonths() {
+                monthsList.innerHTML = "";
+                datesList.innerHTML = '<div class="reports-empty">Choose a month to continue.</div>';
+                filesList.innerHTML = '<div class="reports-empty">Choose a date to see the Excel reports generated on that day.</div>';
+                resetDownload();
+
+                if (!reportsIndex.months.length) {
+                    monthsList.innerHTML = '<div class="reports-empty">No archived reports have been loaded yet.</div>';
+                    reportDetails.textContent = "Once the backend writes into `backupReports`, the archive tree will appear here.";
+                    return;
+                }
+
+                reportsIndex.months.forEach(month => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.dataset.path = month.path || "";
+                    button.textContent = month.label || "Unnamed month";
+                    button.addEventListener("click", () => {
+                        activeMonth = month;
+                        setActiveReportEntry([...monthsList.querySelectorAll("button")], button);
+                        window.location.assign(buildReportsRoute(month.path));
+                    });
+                    monthsList.appendChild(button);
+                });
+
+                reportDetails.textContent = "Select a month folder to continue to the date folders.";
+
+                if (reportsInitialSelection.month) {
+                    const selectedMonth = findMonthByPath(reportsInitialSelection.month);
+                    if (selectedMonth) {
+                        const selectedButton = [...monthsList.querySelectorAll("button")].find(
+                            button => button.dataset.path === selectedMonth.path
+                        );
+                        if (selectedButton) {
+                            setActiveReportEntry([...monthsList.querySelectorAll("button")], selectedButton);
+                        }
+                        activeMonth = selectedMonth;
+                        renderDates(selectedMonth.dates || [], selectedMonth.path);
+                        if (reportsInitialSelection.date) {
+                            const selectedDate = findDateByPath(selectedMonth, reportsInitialSelection.date);
+                            if (selectedDate) {
+                                const selectedDateButton = [...datesList.querySelectorAll("button")].find(
+                                    button => button.dataset.path === selectedDate.path
+                                );
+                                if (selectedDateButton) {
+                                    setActiveReportEntry([...datesList.querySelectorAll("button")], selectedDateButton);
+                                }
+                                activeDate = selectedDate;
+                                renderFiles(selectedDate.files || []);
+                                reportDetails.textContent = `Showing Excel files for ${selectedDate.label || "the selected date"}.`;
+                            }
+                        }
+                    }
+                }
+            }
+
+            title.innerHTML = "ARCHIVED <em>POST CHECK</em> REPORTS";
+            subtitle.textContent = "Browse month folders, date folders, and downloadable Excel files";
+            logoMark.textContent = "HPE Aruba Reports";
+            renderMonths();
+        }
+
+        renderReportsMode();
+    </script>
+</body>
+</html>

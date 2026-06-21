@@ -1,0 +1,151 @@
+<style>
+    #satsoc-loading-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(248, 250, 252, 0.72);
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.16s ease, visibility 0s linear 0.16s;
+    }
+
+    #satsoc-loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: all;
+        transition: opacity 0.16s ease;
+    }
+
+    #satsoc-loading-overlay .satsoc-loading-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 22px 28px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.14);
+    }
+
+    #satsoc-loading-overlay img {
+        display: block;
+        width: 72px;
+        height: 72px;
+    }
+
+    #satsoc-loading-overlay .satsoc-loading-text {
+        margin: 0;
+        color: #0f4fb8;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+    }
+
+    body.satsoc-loading-active {
+        cursor: progress;
+    }
+</style>
+
+<div id="satsoc-loading-overlay" aria-hidden="true">
+    <div class="satsoc-loading-panel" role="status" aria-live="polite" aria-busy="true">
+        <img src="{{ url_for('logos', path='images/loader.gif') }}" alt="Loading">
+        <p class="satsoc-loading-text">Loading</p>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const overlay = document.getElementById("satsoc-loading-overlay");
+        if (!overlay) return;
+
+        const pendingNavigationKey = "satsocLoaderPending";
+        let submitTimer = null;
+
+        function showOverlay() {
+            overlay.classList.add("active");
+            overlay.setAttribute("aria-hidden", "false");
+            document.body.classList.add("satsoc-loading-active");
+        }
+
+        function markNavigationPending() {
+            try {
+                sessionStorage.setItem(pendingNavigationKey, "1");
+            } catch {
+                // Ignore storage failures and fall back to the visible overlay state.
+            }
+        }
+
+        function clearNavigationPending() {
+            try {
+                sessionStorage.removeItem(pendingNavigationKey);
+            } catch {
+                // Ignore storage failures and fall back to the visible overlay state.
+            }
+        }
+
+        function hasNavigationPending() {
+            try {
+                return sessionStorage.getItem(pendingNavigationKey) === "1";
+            } catch {
+                return false;
+            }
+        }
+
+        function hideOverlay(clearPending = true) {
+            if (submitTimer) {
+                window.clearTimeout(submitTimer);
+                submitTimer = null;
+            }
+            if (clearPending) {
+                clearNavigationPending();
+            }
+            overlay.classList.remove("active");
+            overlay.setAttribute("aria-hidden", "true");
+            document.body.classList.remove("satsoc-loading-active");
+        }
+
+        function beginNavigation() {
+            markNavigationPending();
+            showOverlay();
+        }
+
+        window.__satsocShowLoader = showOverlay;
+        window.__satsocBeginNavigation = beginNavigation;
+        window.__satsocHideLoader = hideOverlay;
+
+        if (hasNavigationPending()) {
+            showOverlay();
+        } else {
+            hideOverlay(false);
+        }
+
+        document.addEventListener("submit", function (event) {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement)) return;
+            if (form.dataset.satsocLoader === "skip") return;
+            if (form.dataset.satsocLoader === "running") return;
+
+            event.preventDefault();
+            form.dataset.satsocLoader = "running";
+            beginNavigation();
+
+            submitTimer = window.setTimeout(function () {
+                form.submit();
+            }, 60);
+        }, true);
+
+        // Keep the loader visible during the route transition; hide it once the
+        // destination page has finished loading.
+        window.addEventListener("pageshow", function () {
+            hideOverlay(true);
+        });
+    })();
+</script>

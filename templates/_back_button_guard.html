@@ -1,0 +1,120 @@
+<script>
+(function () {
+    if (window.__satsocBackButtonGuardInstalled) return;
+    window.__satsocBackButtonGuardInstalled = true;
+
+    const baseRoute = {{ base_route|tojson }};
+    const flowRoutes = [
+        "/",
+        "/step2",
+        "/ap/checkpoint1",
+        "/ap/checkpoint2",
+        "/ap/checkpoint3",
+        "/ap/checkpoint4",
+        "/ap/checkpoint5",
+        "/ap/checkpoint6",
+        "/ap/checkpoint7",
+        "/ap/checkpoint8",
+        "/ap/checkpoint9",
+        "/ap/checkpoint10",
+        "/ap/checkpoint11",
+        "/ap/checkpoint12",
+        "/ap/checkpoint13",
+        "/ap/checkpoint14",
+        "/ap/checkpoint15",
+        "/ap/checkpoint16",
+        "/ap/checkpoint17",
+        "/switch/checkpoint1",
+        "/switch/checkpoint2",
+        "/switch/checkpoint3",
+        "/switch/checkpoint4",
+        "/switch/checkpoint5",
+        "/switch/checkpoint6",
+        "/switch/checkpoint7",
+        "/switch/checkpoint8",
+        "/switch/checkpoint9",
+        "/switch/checkpoint10",
+        "/switch/checkpoint11",
+        "/switch/checkpoint12",
+        "/switch/checkpoint14",
+        "/switch/checkpoint15",
+        "/validation/complete",
+    ];
+
+    const normalizePath = function (path) {
+        if (!path || path === "/") return "/";
+        return path.replace(/\/+$/, "") || "/";
+    };
+
+    const toPublicPath = function (path) {
+        if (path === "/") {
+            return normalizePath(baseRoute || "/");
+        }
+        return normalizePath(`${baseRoute}${path}`);
+    };
+
+    const flowRoutePaths = flowRoutes.map(toPublicPath);
+    const currentPath = normalizePath(location.pathname);
+    const currentIndex = flowRoutePaths.indexOf(currentPath);
+    const storageKey = "satsocFlowLock";
+
+    if (currentIndex === 0) {
+        sessionStorage.removeItem(storageKey);
+    }
+
+    const readLock = function () {
+        try {
+            return JSON.parse(sessionStorage.getItem(storageKey) || "null");
+        } catch {
+            return null;
+        }
+    };
+
+    const writeLock = function () {
+        const currentLock = readLock();
+        const lockedIndex = Number.isInteger(currentLock?.index) ? currentLock.index : -1;
+        if (currentIndex > lockedIndex) {
+            sessionStorage.setItem(storageKey, JSON.stringify({
+                index: currentIndex,
+                path: currentPath,
+            }));
+        }
+    };
+
+    const enforceLock = function () {
+        const currentLock = readLock();
+        if (!currentLock || !Number.isInteger(currentLock.index)) return;
+        const lockedPath = flowRoutePaths[currentLock.index];
+        if (lockedPath && currentLock.index > currentIndex) {
+            location.replace(lockedPath);
+        }
+    };
+
+    const buildWall = function () {
+        history.replaceState({ satsocBackGuard: true }, "", location.href);
+        for (let index = 0; index < 25; index += 1) {
+            history.pushState({ satsocBackGuard: true, step: index }, "", location.href);
+        }
+    };
+
+    writeLock();
+    enforceLock();
+    buildWall();
+
+    window.addEventListener("popstate", function (event) {
+        event.preventDefault();
+        writeLock();
+        enforceLock();
+        buildWall();
+        setTimeout(function () {
+            history.go(1);
+        }, 0);
+    });
+
+    window.addEventListener("pageshow", function () {
+        writeLock();
+        enforceLock();
+        buildWall();
+    });
+})();
+</script>

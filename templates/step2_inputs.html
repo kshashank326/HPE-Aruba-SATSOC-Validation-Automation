@@ -1,0 +1,862 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HPE Aruba</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f5f7fa;
+            --surface: #ffffff;
+            --border: #e1e8f0;
+            --border-hi: #d0dae8;
+            --accent: #0066cc;
+            --text: #2c3e50;
+            --text-dim: #7a8fa6;
+            --text-hi: #1a2332;
+            --danger: #e63946;
+            --success: #06a77d;
+            --mono: 'IBM Plex Mono', monospace;
+            --sans: 'IBM Plex Sans', sans-serif;
+            --radius: 4px;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: .35;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .top-nav {
+            position: relative;
+            z-index: 2;
+            background-color: #123c61;
+            padding: 6px 16px;
+        }
+
+        .top-nav-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #ffffff;
+            gap: 16px;
+        }
+
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .top-nav-brand {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .top-nav-links {
+            display: flex;
+            gap: 16px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .top-nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .top-nav-logo img {
+            height: 28px;
+            width: auto;
+            display: block;
+        }
+        
+
+        .page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 24px 0;
+        }
+
+        header { text-align: center; margin-bottom: 56px; }
+
+        .logo-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo-mark svg { width: 28px; height: 28px; }
+
+        .logo-mark span {
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        h1 {
+            font-family: var(--mono);
+            font-size: clamp(22px, 4vw, 36px);
+            font-weight: 600;
+            color: var(--text-hi);
+            letter-spacing: -.02em;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        h1 em { font-style: normal; color: var(--accent); }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-family: var(--mono);
+            letter-spacing: .05em;
+        }
+
+        /*  Meta bar  */
+        .meta-bar {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            gap: 24px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: .08em;
+            color: var(--text-dim);
+        }
+
+        .meta-item strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /*  Card  */
+        .card {
+            width: 100%;
+            max-width: 600px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: .6;
+        }
+
+        /*  Step header  */
+        .step-divider {
+            border-top: 1px solid var(--border);
+            margin: 28px 0;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .step-badge {
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 2px;
+            padding: 2px 7px;
+            opacity: .7;
+        }
+
+        .step-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        /*  Fields  */
+        .field { margin-bottom: 24px; }
+        .field:last-child { margin-bottom: 0; }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .field-grid .field { margin-bottom: 0; }
+
+        label {
+            display: block;
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 13px;
+            padding: 12px 14px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(0,102,204,.12);
+        }
+
+        input::placeholder { color: var(--text-dim); }
+
+        /*  Select  */
+        .select-wrap { position: relative; }
+
+        .select-wrap::after {
+            content: '';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0; height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid var(--text-dim);
+            pointer-events: none;
+        }
+
+        select {
+            width: 100%;
+            appearance: none;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 13px;
+            padding: 12px 40px 12px 14px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(0,102,204,.12);
+        }
+
+        select:disabled { opacity: .35; cursor: not-allowed; }
+
+        /*  Inline action row (select + button)  */
+        .input-btn-row { display: flex; gap: 10px; align-items: stretch; }
+        .input-btn-row .select-wrap { flex: 1; }
+
+        .load-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            border-radius: var(--radius);
+            color: var(--accent);
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            padding: 0 16px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background .2s, color .2s;
+            flex-shrink: 0;
+        }
+
+        .load-btn:hover { background: rgba(0,102,204,.08); }
+        .load-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+        /*  Loader bar  */
+        .loader {
+            height: 2px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity .2s;
+        }
+
+        .loader.active { opacity: 1; }
+
+        .loader-bar {
+            height: 100%;
+            width: 35%;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: slide 1.1s ease-in-out infinite;
+        }
+
+        @keyframes slide {
+            0%   { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+        }
+
+        /*  Status messages  */
+        .status {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: .05em;
+            margin-top: 8px;
+            min-height: 16px;
+        }
+
+        .status.error { color: var(--danger); }
+        .status.ok    { color: var(--success); }
+        .status.info  { color: var(--text-dim); }
+
+        /*  Radio group  */
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 4px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 14px;
+            height: 14px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .radio-option span {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        /*  Submit button  */
+        #submit-btn {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 13px;
+            font-family: var(--mono);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: .08em;
+            cursor: pointer;
+            transition: opacity .2s, transform .1s;
+            margin-top: 8px;
+        }
+
+        #submit-btn:hover  { opacity: .9; }
+        #submit-btn:active { transform: scale(.99); }
+        #submit-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+        /*  Footer  */
+        footer {
+            width: calc(100% + 48px);
+            margin: 48px -24px 0;
+            padding: 16px 0;
+            background: #02101E;
+            color: #ffffff;
+            align-self: stretch;
+        }
+
+        .footer-inner {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            line-height: 0;
+            flex: 0 0 auto;
+        }
+
+        .footer-logo img {
+            border: none;
+            padding: 0px;
+            margin: 0px;
+            height: 12px;
+            width: auto;
+            opacity: 1;
+            display: block;
+        }
+
+        .footer-copy {
+            font-size: 13px;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+        .fade-in { animation: fadeIn .4s ease both; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+<nav class="top-nav">
+    <div class="top-nav-inner">
+            <div class="top-nav-left">
+                <div class="top-nav-brand">SD Automation</div>
+                <ul class="top-nav-links">
+                    <li><a href="{{ public_path('/') }}">Home</a></li>
+                    <li><a href="{{ public_path('/reports') }}" target="_blank" rel="noopener">Reports</a></li>
+                </ul>
+            </div>
+        <div class="top-nav-logo">
+            <img src="{{ public_path('/logos/images/T-logo.png') }}" alt="Logo" />
+        </div>
+    </div>
+</nav>
+<div class="page">
+
+    <header class="fade-in">
+        <div class="logo-mark">
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="8" height="8" rx="1" fill="#0066cc"/>
+                <rect x="2"  y="2"  width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                <rect x="21" y="2"  width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                <rect x="2"  y="21" width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+                <rect x="21" y="21" width="5" height="5" rx="1" fill="#0066cc" opacity=".5"/>
+            </svg>
+            <span>HPE Aruba SATSOC</span>
+        </div>
+        <h1>HPE Aruba <em>AP/SWITCH</em> Validation</h1>
+        <p class="subtitle">Configuration Inputs</p>
+    </header>
+
+    <!-- Meta: device scope + username passed from step 1 -->
+    <div class="meta-bar fade-in" style="animation-delay:.05s">
+        <span class="meta-item">Device Scope: <strong>{{ device_scope | upper }}</strong></span>
+        <span class="meta-item">User: <strong>{{ username }}</strong></span>
+    </div>
+
+    <div class="card fade-in" style="animation-delay:.1s">
+
+        <form method="post" action="{{ public_path('/step2') }}">
+            <input type="hidden" name="customer_name" id="customer_name">
+
+            <!--  REGION  -->
+            <div class="step-header" style="margin-bottom:20px;">
+                <span class="step-badge">STEP 2</span>
+                <span class="step-label">Configuration Inputs</span>
+            </div>
+
+            <div class="field">
+                <label for="base_url">Region</label>
+                <div class="select-wrap">
+                    <select name="base_url" id="base_url" required>
+                        <option value="">Select Region</option>
+                        <option value="https://api-ap.central.arubanetworks.com">AP South</option>
+                        <option value="https://apigw-eucentral2.central.arubanetworks.com">EU Central</option>
+                        <option value="https://apigw-uswest5.central.arubanetworks.com">US West</option>
+                    </select>
+                </div>
+            </div>
+
+            <!--  BASIC DETAILS  -->
+            <div class="step-divider"></div>
+            <div class="step-header">
+                <span class="step-badge">A</span>
+                <span class="step-label">Basic Details</span>
+            </div>
+
+            <!-- Customer -->
+            <div class="field">
+                <label for="tenant_id">Customer</label>
+                <div class="input-btn-row">
+                    <div class="select-wrap">
+                        <select name="tenant_id" id="tenant_id" onchange="handleCustomerSelection()" required>
+                            <option value="">Select Customer</option>
+                        </select>
+                    </div>
+                    <button type="button" class="load-btn" onclick="loadCustomers()">LOAD</button>
+                </div>
+                <div class="loader" id="customer-loader"><div class="loader-bar"></div></div>
+                <div class="status info" id="customer-status"></div>
+            </div>
+
+            <!-- Group -->
+            <div class="field">
+                <label for="group_name">Group Name</label>
+                <div class="select-wrap">
+                    <select name="group_name" id="group_name" onchange="handleGroupSelection()" required>
+                        <option value="">Select a customer first</option>
+                    </select>
+                </div>
+                <div class="loader" id="group-loader"><div class="loader-bar"></div></div>
+                <div class="status info" id="group-status"></div>
+            </div>
+
+            <!-- Site -->
+            <div class="field">
+                <label for="site_name">Site Name</label>
+                <div class="select-wrap">
+                    <select name="site_name" id="site_name" onchange="handleSiteSelection()" required>
+                        <option value="">Select a customer first</option>
+                    </select>
+                </div>
+                <div class="loader" id="site-loader"><div class="loader-bar"></div></div>
+                <div class="status info" id="site-status"></div>
+            </div>
+
+            <!-- Optimus Service ID -->
+            <div class="field">
+                <label for="optimus_service_id">Optimus Service ID</label>
+                <input type="text" name="optimus_service_id" id="optimus_service_id"
+                    placeholder="e.g. SVC-00123" required />
+            </div>
+
+            <!--  ADDITIONAL DETAILS (conditional)  -->
+            {% if device_scope in ["ap", "both"] or device_scope in ["switch", "both"] %}
+            <div class="step-divider"></div>
+            <div class="step-header">
+                <span class="step-badge">B</span>
+                <span class="step-label">Additional Details
+                    {% if device_scope == "ap" %} for APs
+                    {% elif device_scope == "switch" %} for Switches
+                    {% elif device_scope == "both" %} for APs &amp; Switches
+                    {% endif %}
+                </span>
+            </div>
+
+            {% if device_scope in ["ap", "both"] %}
+            <div class="field-grid" style="margin-bottom:24px;">
+                <div class="field">
+                    <label for="ssid_count">No. of SSIDs (APs)</label>
+                    <input type="number" name="ssid_count" id="ssid_count" min="1"
+                        placeholder="0" required />
+                </div>
+                <div class="field">
+                    <label>Kloudspot Applicable (APs)</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="kloudspot_applicable" value="yes" required />
+                            <span>Yes</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="kloudspot_applicable" value="no" required />
+                            <span>No</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="ap_firmware_version">Firmware Current Version (APs)</label>
+                <input type="text" name="ap_firmware_version" id="ap_firmware_version"
+                    placeholder="e.g. 8.11.2.0" required />
+            </div>
+            {% endif %}
+
+            {% if device_scope in ["switch", "both"] %}
+            <div class="field">
+                <label for="switch_firmware_version">Firmware Current Version (Switches)</label>
+                <input type="text" name="switch_firmware_version" id="switch_firmware_version"
+                    placeholder="e.g. WC.16.11.0014" required />
+            </div>
+
+            <div class="field-grid">
+                <div class="field">
+                    <label for="stacked_switches">No. of Stacked Switches</label>
+                    <input type="number" name="stacked_switches" id="stacked_switches"
+                        min="0" placeholder="0" required />
+                </div>
+                <div class="field">
+                    <label for="standalone_switches">No. of Standalone Switches</label>
+                    <input type="number" name="standalone_switches" id="standalone_switches"
+                        min="0" placeholder="0" required />
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            <!-- Submit -->
+            <div class="step-divider"></div>
+            <button type="submit" id="submit-btn">Proceed</button>
+
+        </form>
+    </div>
+    <footer class="fade-in" style="animation-delay:.2s">
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <img src="{{ public_path('/logos/images/tata-comm-footer.png') }}" alt="Footer Logo" />
+            </div>
+            <div class="footer-copy">
+                &copy; 2026 Tata Communications Ltd. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script>
+    const baseRoute = {{ base_route|tojson }};
+    const $ = id => document.getElementById(id);
+
+    function setLoader(id, active) {
+        $(`${id}-loader`)?.classList.toggle("active", active);
+    }
+
+    function setStatus(id, msg, type = "info") {
+        const el = $(id + "-status");
+        if (!el) return;
+        el.textContent = msg;
+        el.className = "status " + type;
+    }
+
+    async function loadCustomers() {
+        const baseUrl = $("base_url").value;
+
+        if (!baseUrl) {
+            setStatus("customer", "Please select a region first.", "error");
+            return;
+        }
+
+        $("tenant_id").innerHTML = '<option value="">Loading customers</option>';
+        $("group_name").innerHTML = '<option value=""> Select a customer first </option>';
+        $("site_name").innerHTML  = '<option value=""> Select a customer first </option>';
+        setLoader("customer", true);
+        setStatus("customer", "Fetching customers", "info");
+        setStatus("group", "", "info");
+        setStatus("site", "", "info");
+
+        try {
+            const res  = await fetch(`${baseRoute}/api/fetch-customers?base_url=${encodeURIComponent(baseUrl)}`);
+            const data = await res.json();
+
+            if (!res.ok) {
+                $("tenant_id").innerHTML = '<option value=""> Load customers and select one </option>';
+                setStatus("customer", data.detail || "Failed to fetch customers.", "error");
+                return;
+            }
+
+            $("tenant_id").innerHTML = '<option value=""> Select Customer </option>';
+
+            if (!data.customers || data.customers.length === 0) {
+                setStatus("customer", "No customers found.", "info");
+                return;
+            }
+
+            data.customers.forEach(c => {
+                $("tenant_id").appendChild(new Option(`${c.customer_name} (${c.customer_id})`, c.customer_id));
+            });
+
+            setStatus("customer", `${data.customers.length} customer(s) loaded.`, "ok");
+            setStatus("group", "Select a customer to load groups.", "info");
+            setStatus("site",  "Select a customer to load sites.",  "info");
+
+        } catch (err) {
+            $("tenant_id").innerHTML = '<option value=""> Load customers and select one </option>';
+            setStatus("customer", "Failed to fetch customers.", "error");
+        } finally {
+            setLoader("customer", false);
+        }
+    }
+
+    async function handleCustomerSelection() {
+        const tenantId    = $("tenant_id").value;
+        const baseUrl     = $("base_url").value;
+
+        if (!tenantId) {
+            $("group_name").innerHTML = '<option value=""> Select a customer first </option>';
+            $("site_name").innerHTML  = '<option value=""> Select a customer first </option>';
+            setStatus("group", "", "info");
+            setStatus("site",  "", "info");
+            $("customer_name").value = "";
+            return;
+        }
+
+        syncCustomerName();
+
+        try {
+            const formData = new FormData();
+            formData.append("tenant_id",     tenantId);
+            formData.append("base_url",      baseUrl);
+
+            const res  = await fetch(`${baseRoute}/api/save-customer-selection`, { method: "POST", body: formData });
+            const data = await res.json();
+            if (!res.ok) { setStatus("customer", data.detail || "Failed to save customer.", "error"); return; }
+
+        } catch { setStatus("customer", "Failed to save selected customer.", "error"); return; }
+
+        await Promise.all([loadGroups(), loadSites()]);
+    }
+
+    function syncCustomerName() {
+        const sel  = $("tenant_id");
+        const opt  = sel.options[sel.selectedIndex];
+        if (!opt?.value) { $("customer_name").value = ""; return; }
+        const match = (opt.textContent || "").match(/^(.*)\s+\([^)]+\)$/);
+        $("customer_name").value = match ? match[1].trim() : (opt.textContent || "").trim();
+    }
+
+    async function loadGroups() {
+        const baseUrl      = $("base_url").value;
+        const tenantId     = $("tenant_id").value;
+
+        $("group_name").innerHTML = '<option value="">Loading groups</option>';
+        setLoader("group", true);
+        setStatus("group", "", "info");
+
+        try {
+            const res  = await fetch(`${baseRoute}/api/fetch-groups?base_url=${encodeURIComponent(baseUrl)}&tenant_id=${encodeURIComponent(tenantId)}`);
+            const data = await res.json();
+
+            if (!res.ok) {
+                $("group_name").innerHTML = '<option value=""> Select a customer first </option>';
+                setStatus("group", data.detail || "Failed to fetch groups.", "error");
+                return;
+            }
+
+            $("group_name").innerHTML = '<option value=""> Select Group </option>';
+            if (!data.groups?.length) { setStatus("group", "No groups found.", "info"); return; }
+
+            data.groups.forEach(g => $("group_name").appendChild(new Option(g, g)));
+            setStatus("group", `${data.groups.length} group(s) loaded.`, "ok");
+
+        } catch { setStatus("group", "Failed to fetch groups.", "error"); }
+        finally  { setLoader("group", false); }
+    }
+
+    async function loadSites() {
+        const baseUrl      = $("base_url").value;
+        const tenantId     = $("tenant_id").value;
+
+        $("site_name").innerHTML = '<option value="">Loading sites</option>';
+        setLoader("site", true);
+        setStatus("site", "", "info");
+
+        try {
+            const res  = await fetch(`${baseRoute}/api/fetch-sites?base_url=${encodeURIComponent(baseUrl)}&tenant_id=${encodeURIComponent(tenantId)}`);
+            const data = await res.json();
+
+            if (!res.ok) {
+                $("site_name").innerHTML = '<option value=""> Select a customer first </option>';
+                setStatus("site", data.detail || "Failed to fetch sites.", "error");
+                return;
+            }
+
+            $("site_name").innerHTML = '<option value=""> Select Site </option>';
+            if (!data.sites?.length) { setStatus("site", "No sites found.", "info"); return; }
+
+            data.sites.forEach(s => $("site_name").appendChild(new Option(s, s)));
+            setStatus("site", `${data.sites.length} site(s) loaded.`, "ok");
+
+        } catch { setStatus("site", "Failed to fetch sites.", "error"); }
+        finally  { setLoader("site", false); }
+    }
+
+    async function handleGroupSelection() {
+        const groupName = $("group_name").value;
+        if (!groupName) return;
+        try {
+            const fd = new FormData();
+            fd.append("group_name", groupName);
+            const res  = await fetch(`${baseRoute}/api/save-group-selection`, { method: "POST", body: fd });
+            const data = await res.json();
+            setStatus("group", res.ok ? "Group selected and saved." : (data.detail || "Failed to save group."), res.ok ? "ok" : "error");
+        } catch { setStatus("group", "Failed to save selected group.", "error"); }
+    }
+
+    async function handleSiteSelection() {
+        const siteName = $("site_name").value;
+        if (!siteName) return;
+        try {
+            const fd = new FormData();
+            fd.append("site_name", siteName);
+            const res  = await fetch(`${baseRoute}/api/save-site-selection`, { method: "POST", body: fd });
+            const data = await res.json();
+            setStatus("site", res.ok ? "Site selected and saved." : (data.detail || "Failed to save site."), res.ok ? "ok" : "error");
+        } catch { setStatus("site", "Failed to save selected site.", "error"); }
+    }
+</script>
+
+{% include "_loading_overlay.html" %}
+{% include "_back_button_guard.html" %}
+
+</body>
+</html>
